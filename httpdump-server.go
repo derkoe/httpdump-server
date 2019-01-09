@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 )
 
 func main() {
@@ -16,12 +17,9 @@ func main() {
 }
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("%s %s %s\n", r.Method, r.URL, r.Proto)
-	for k, v := range r.Header {
-		fmt.Printf("%v: %v\n", k, v)
-	}
-	fmt.Println("================")
+	dump, _ := httputil.DumpRequest(r, true)
+	fmt.Printf("%s\n", dump)
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "Hello, World!")
+	fmt.Fprintf(w, "%s", dump)
 }
